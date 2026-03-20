@@ -1,0 +1,8 @@
+[package]
+name = "brain"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ort = "=2.0.0-rc.12"
+opencv = "0.98.1"
