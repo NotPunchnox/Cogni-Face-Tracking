@@ -1,6 +1,6 @@
 use opencv::{core, imgproc, prelude::*};
 use opencv::{highgui, videoio, objdetect};
-use st3215::ST3215;
+// use st3215::ST3215;
 
 
 /// Représente la position du visage analysée
@@ -86,7 +86,7 @@ fn analyze_face_position(face_rect: &core::Rect, frame_width: i32, frame_height:
 fn generate_movement_instruction(face_pos: &FacePosition, smoothing_factor: f32) -> MovementInstruction {
     // CONVERSION: pixels → degrés
     // Une caméra typique a un champ de vision de ~60°
-    // Avec une résolution de ~640px, cela donne ~0.1°/pixel
+    // Avec une résolution de ~640px, donc ~0.1°/pixel
     let degrees_per_pixel = 0.1;
     
     // CALCUL: Instructions de mouvement
@@ -180,7 +180,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("║  SYSTÈME DE TRACKING DE VISAGE AVEC CENTRAGE AUTO      ║");
     println!("╚════════════════════════════════════════════════════════╝\n");
 
-    let mut controller = ST3215::new("/dev/ttyACM0")?;
+    // let mut controller = ST3215::new("/dev/ttyACM0")?;
 
     // Charger le classifieur Haar Cascade pour la détection de visages
     let mut face_cascade = objdetect::CascadeClassifier::new(
@@ -208,8 +208,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let smoothing_factor = 0.5;
     
     // Positions précédentes du servomoteur (pour hystérésis)
-    let mut last_pan_pos = 90u16;   // 90° = position neutre/centrale
-    let mut last_tilt_pos = 90u16;
+    let mut last_pan_pos = 2048;
+    let mut last_tilt_pos = 2048;
     
     // Boucle principale
     loop {
@@ -287,16 +287,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 new_pan_pos = (new_pan_pos * 4096) / 360;
                 
                 println!("\nPositions servomoteur calculées:");
-                println!("   Pan:  {}° → {}° (delta: {:.1}°)", last_pan_pos, new_pan_pos, instruction.pan);
-                println!("   Tilt: {}° → {}° (delta: {:.1}°)", last_tilt_pos, new_tilt_pos, instruction.tilt);
+                println!("   Pan:  {}° → {} (delta: {:.1}°)", last_pan_pos, new_pan_pos, instruction.pan);
+                println!("   Tilt: {}° → {} (delta: {:.1}°)", last_tilt_pos, new_tilt_pos, instruction.tilt);
                 
                 // INTÉGRATION SERVOMOTEUR
-                
-                   controller.move_to(1, new_pan_pos, 2400, 50, false);
+                //    controller.move_to(1, new_pan_pos, 2400, 50, false);
                 //    controller.set_servo_position(2, new_tilt_pos)?;  // Servo 2 = Tilt (vertical)
 
                 // 4. Optionnel - Attendre que les servos réagissent:
-                   std::thread::sleep(std::time::Duration::from_millis(50));
+                //    std::thread::sleep(std::time::Duration::from_millis(50));
                 
                 last_pan_pos = new_pan_pos;
                 last_tilt_pos = new_tilt_pos;
